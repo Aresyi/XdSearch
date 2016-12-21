@@ -1,0 +1,161 @@
+<?xml version="1.0" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<schema name="starry-community-brand" version="1.1">
+  <types>
+  			<fieldType name="int" class="solr.TrieIntField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+  			<fieldType name="long" class="solr.TrieLongField" precisionStep="0" omitNorms="true" positionIncrementGap="0"/>
+			<fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
+   			<fieldtype name="string"  class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+   
+   			<fieldType name="text_ik" class="solr.TextField" >    
+                   <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/>    
+                   <analyzer type="index">    
+                       <tokenizer class="org.wltea.analyzer.solr.IKTokenizerFactory" isMaxWordLength="false"/>    
+                       <filter class="solr.StopFilterFactory"    
+                               ignoreCase="true" words="ext_stopword.dic"/>    
+                       <filter class="solr.WordDelimiterFilterFactory"    
+                               generateWordParts="1"    
+                               generateNumberParts="1"    
+                               catenateWords="1"    
+                               catenateNumbers="1"    
+                               catenateAll="0"    
+                               splitOnCaseChange="1"/>    
+                       <filter class="solr.LowerCaseFilterFactory"/>    
+                       <filter class="solr.EnglishPorterFilterFactory"    
+                           protected="ext_stopword.dic"/>    
+                       <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>    
+                   </analyzer>    
+                     <analyzer type="query">    
+                       <tokenizer class="org.wltea.analyzer.solr.IKTokenizerFactory" isMaxWordLength="false"/>    
+                       <filter class="solr.StopFilterFactory"    
+                               ignoreCase="true" words="ext_stopword.dic"/>    
+                       <filter class="solr.WordDelimiterFilterFactory"    
+                               generateWordParts="1"    
+                               generateNumberParts="1"    
+                               catenateWords="1"    
+                               catenateNumbers="1"    
+                               catenateAll="0"    
+                               splitOnCaseChange="1"/>    
+                       <filter class="solr.LowerCaseFilterFactory"/>    
+                       <filter class="solr.EnglishPorterFilterFactory"    
+                           protected="ext_stopword.dic"/>    
+                       <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>    
+                   </analyzer>    
+        	</fieldType>
+        	
+        	<fieldtype name="text_ws" class="solr.TextField" positionIncrementGap="100">
+				  <analyzer>
+				  		<tokenizer class="solr.WhitespaceTokenizerFactory" /> 
+				  </analyzer>
+			</fieldtype>
+			
+			<!-- 
+				输入提示 , 分为两种 :  单词提示 , 短语提示
+			 -->
+			
+			<!-- 单词提示 , 使用的  字段类型 , 分析过滤配置如下 : -->
+			<fieldType name="text_auto" class="solr.TextField"  positionIncrementGap="100">
+				<analyzer>
+					<tokenizer class="solr.WhitespaceTokenizerFactory"/>
+					<filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+					<filter class="solr.LowerCaseFilterFactory"/>
+				</analyzer>
+			</fieldType>
+			
+
+			<!-- 短语提示 , 使用的  字段类型 , 分析过滤配置如下 :
+			<fieldType name="text_auto" class="solr.TextField" >
+				<analyzer>
+					<tokenizer class="solr.KeywordTokenizerFactory"/>
+					<filter class="solr.LowerCaseFilterFactory"/>
+				</analyzer>
+			</fieldType>
+			-->   
+		
+  </types>
+
+
+
+ <fields>   
+
+  <field name="id"      type="int"   indexed="true"  stored="true"  multiValued="false" required="true"/>
+  <field name="suggestion" type="text_auto" indexed="true" stored="true" multiValued="true" />
+  <field name="all" type="text_ik" indexed="true" stored="false" multiValued="true" />
+  
+  <!-- 商家名称 -->
+  <field name="brandName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 审核状态 -->
+  <field name="status" type="int" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- Logo地址 -->
+  <field name="logo" type="string" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 图片地址 -->
+  <field name="imageFile" type="string" indexed="true"  stored="true"  required="true" /> 
+  
+  
+  
+  <!-- #################################################################################################### -->
+  <!-- ###############################           微薄相关		  	 ##################################### -->
+  <!-- #################################################################################################### -->
+  
+  
+  <!--微薄内容-->
+  <field name="statusText" 	type="text_ik" 	indexed="true" stored="false" multiValued="false" /> 
+  
+  <!--微薄id-->
+  <field name="statusId"  	type="long" 	indexed="true" stored="false" multiValued="false"/> 
+    
+  <!--用户id-->
+  <field name="userId"  	type="long" 	indexed="true" stored="true" multiValued="false"/> 
+  
+  <!--feature-->
+  <field name="feature"  	type="int" 	indexed="true" stored="true" multiValued="false"/> 
+  
+  <!--创建时间-->
+  <field name="createTimeStr"  	type="string" 	indexed="true" stored="true" multiValued="false"/>
+  
+  <!--创建时间-->
+  <field name="createTime"  	type="long" 	indexed="true" stored="false" multiValued="false"/>  
+  
+
+   
+ </fields>
+
+ <!-- field to use to determine and enforce document uniqueness. -->
+ <uniqueKey>id</uniqueKey>
+
+ <!-- field for the QueryParser to use when an explicit fieldname is absent -->
+ <defaultSearchField>brandName</defaultSearchField>
+
+ <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+ <solrQueryParser defaultOperator="AND"/>
+ 
+ <!-- 
+ 
+ 	如果我们需要对一个 "关键词"  同时查询多个列 , 那么我们可以使用  CopyField 进行列的合并 
+ 	说明：　source  是要拷贝的字段  ,  dest 是要合并到的字段 , maxChars 是字数限制
+ 
+  -->
+  <copyField source="brandName" dest="suggestion"/>
+  <copyField source="statusText" dest="all"/>
+  
+</schema>
+

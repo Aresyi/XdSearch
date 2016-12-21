@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+       
+  <bean id="commDataSource" class="org.logicalcobwebs.proxool.ProxoolDataSource">
+    <property name="driver" value="${datasource.driverClassName}" />
+    <property name="driverUrl" value="${datasource.url}" />
+    <property name="user" value="${datasource.username}" />
+    <property name="password" value="${datasource.password}" />
+    <property name="alias" value="${proxool.alias}" />
+    <property name="simultaneousBuildThrottle" value="${proxool.simultaneous-build-throttle}" />
+    <property name="maximumConnectionCount" value="${proxool.maximum-connection-count}" />
+    <property name="minimumConnectionCount" value="${proxool.minimum-connection-count}" />
+    <property name="delegateProperties" value="user=${datasource.username},password=${datasource.password}" />
+  </bean>
+
+
+  <bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="configLocation">
+      <value>${ibatis.sqlmapconfig}</value>
+    </property>
+    <property name="dataSource">
+      <ref bean="commDataSource" />
+    </property>
+  </bean>
+ 
+  <bean id="commTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="commDataSource" />
+  </bean>
+
+</beans>

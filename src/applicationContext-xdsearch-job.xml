@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+       default-autowire="byName">
+
+   <!--Brand索引相关-->
+    <bean id="brandIndexJob" class="com.starrymedia.xd.search.job.BrandIndexJob"/>
+    
+    <bean id="createBrandIndexJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="brandIndexJob" />
+		<property name="targetMethod" value="createIndex" />
+		<property name="concurrent" value="false" />
+	</bean>
+    
+    <bean id="updateBrandIndexJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="brandIndexJob" />
+		<property name="targetMethod" value="updateIndex" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+	<bean id="deleteBrandIndexJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="brandIndexJob" />
+		<property name="targetMethod" value="deleteIndex" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+    <bean id="createBrandIndexJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="createBrandIndexJobDetail" />
+	    <property name="cronExpression">
+            <value>0 */10 * * * ?</value><!--10分钟运行一次 -->
+        </property>
+	</bean>
+
+    <bean id="updateBrandIndexJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="updateBrandIndexJobDetail" />
+	    <property name="cronExpression">
+            <value>0 */20 * * * ?</value><!--20分钟运行一次 -->
+        </property>
+	</bean>
+	
+	<bean id="deleteBrandIndexJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="deleteBrandIndexJobDetail" />
+	    <property name="cronExpression">
+            <value>0 */20 * * * ?</value><!--20分钟运行一次 -->
+        </property>
+	</bean>
+	
+	
+	
+	 <!--Goods索引相关-->
+    <bean id="goodsIndexJob" class="com.starrymedia.xd.search.job.GoodsIndexJob"/>
+    
+    <bean id="createGoodsIndexJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="goodsIndexJob" />
+		<property name="targetMethod" value="createIndex" />
+		<property name="concurrent" value="false" />
+	</bean>
+    
+    <bean id="deleteGoodsIndexJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="goodsIndexJob" />
+		<property name="targetMethod" value="deleteIndex" />
+		<property name="concurrent" value="false" />
+	</bean>
+	
+    <bean id="createGoodsIndexJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="createGoodsIndexJobDetail" />
+	    <property name="cronExpression">
+            <value>0 */1 * * * ?</value><!--1分钟运行一次 -->
+        </property>
+	</bean>
+
+    <bean id="deleteGoodsIndexJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="deleteGoodsIndexJobDetail" />
+	    <property name="cronExpression">
+            <value>0 */5 * * * ?</value><!--5分钟运行一次 -->
+        </property>
+	</bean>
+	
+	
+	<!--Shop索引相关-->
+    <bean id="shopIndexJob" class="com.starrymedia.xd.search.job.ShopIndexJob"/>
+    
+    <bean id="createShopIndexJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="shopIndexJob" />
+		<property name="targetMethod" value="createIndex" />
+		<property name="concurrent" value="false" />
+	</bean>
+    
+    <bean id="createShopIndexJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="createShopIndexJobDetail" />
+	    <property name="cronExpression">
+            <value>0 */2 * * * ?</value><!--2分钟运行一次 -->
+        </property>
+	</bean>
+	
+	<bean id="deleteShopIndexJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="shopIndexJob" />
+		<property name="targetMethod" value="deleteIndex" />
+		<property name="concurrent" value="false" />
+	</bean>
+    
+    <bean id="deleteShopIndexJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="deleteShopIndexJobDetail" />
+	    <property name="cronExpression">
+            <value>0 */6 * * * ?</value><!--6分钟运行一次 -->
+        </property>
+	</bean>
+
+	
+    <!-- ############################### 启动调度   ###############################-->
+    <bean id="start" lazy-init="false" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+            	
+            	<!-- 暂不启用 
+                <ref bean="createBrandIndexJobTrigger"/>
+                <ref bean="updateBrandIndexJobTrigger"/>
+                <ref bean="deleteBrandIndexJobTrigger"/>
+                 -->
+                 
+                <ref bean="createGoodsIndexJobTrigger"/>
+                <ref bean="deleteGoodsIndexJobTrigger"/>
+
+                <ref bean="createShopIndexJobTrigger"/>
+                <ref bean="deleteShopIndexJobTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+</beans>

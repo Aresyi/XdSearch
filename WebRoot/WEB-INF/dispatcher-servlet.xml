@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <!-- 向外提供Service服务 -->
+    
+    <bean name="/brandXdSearchService" class="org.phprpc.spring.remoting.PHPRPC_Exporter">
+        <property name="service" ref="brandXdSearchService"/>
+        <property name="serviceInterface" value="com.starrymedia.xd.search.service.BrandXdSearchService"/>
+    </bean>
+    
+    
+    <bean name="/goodsXdSearchService" class="org.phprpc.spring.remoting.PHPRPC_Exporter">
+        <property name="service" ref="goodsXdSearchService"/>
+        <property name="serviceInterface" value="com.starrymedia.xd.search.service.GoodsXdSearchService"/>
+    </bean>
+    
+    <bean name="/shopXdSearchService" class="org.phprpc.spring.remoting.PHPRPC_Exporter">
+        <property name="service" ref="shopXdSearchService"/>
+        <property name="serviceInterface" value="com.starrymedia.xd.search.service.ShopXdSearchService"/>
+    </bean>
+    
+
+</beans>

@@ -1,0 +1,160 @@
+<?xml version="1.0" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<schema name="starry-community-goods" version="1.1">
+  <types>
+  			<fieldType name="int" class="solr.TrieIntField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+  			<fieldType name="long" class="solr.TrieLongField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+			<fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
+			<fieldType name="slong" class="solr.SortableLongField" sortMissingLast="true" omitNorms="true"/>
+   			<fieldtype name="string"  class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+   
+   			<fieldType name="text_ik" class="solr.TextField" >    
+                   <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/>    
+                   <analyzer type="index">    
+                       <tokenizer class="org.wltea.analyzer.solr.IKTokenizerFactory" isMaxWordLength="false"/>    
+                       <filter class="solr.WordDelimiterFilterFactory"    
+                               generateWordParts="1"    
+                               generateNumberParts="1"    
+                               catenateWords="1"    
+                               catenateNumbers="1"    
+                               catenateAll="0"    
+                               splitOnCaseChange="1"/>    
+                       <filter class="solr.LowerCaseFilterFactory"/>    
+                       <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>    
+                   </analyzer>    
+                     <analyzer type="query">    
+                       <tokenizer class="org.wltea.analyzer.solr.IKTokenizerFactory" isMaxWordLength="false"/>    
+                       <filter class="solr.WordDelimiterFilterFactory"    
+                               generateWordParts="1"    
+                               generateNumberParts="1"    
+                               catenateWords="1"    
+                               catenateNumbers="1"    
+                               catenateAll="0"    
+                               splitOnCaseChange="1"/>    
+                       <filter class="solr.LowerCaseFilterFactory"/>    
+                       <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>    
+                   </analyzer>    
+        	</fieldType>
+        	
+        	<fieldtype name="text_ws" class="solr.TextField" positionIncrementGap="100">
+				  <analyzer>
+				  		<tokenizer class="solr.WhitespaceTokenizerFactory" /> 
+				  </analyzer>
+			</fieldtype>
+			
+  </types>
+
+
+
+ <fields>   
+
+  <!-- 唯一ID -->
+  <field name="id"      type="long"   indexed="true"  stored="true"  multiValued="false" required="true"/>
+  
+  <!-- 活动名称 -->
+  <field name="mpName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 产品名称 -->
+  <field name="goodsName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 商家名称 -->
+  <field name="brandName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 国家 -->
+  <field name="country" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 省-->
+  <field name="province" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 市 -->
+  <field name="city" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 区-->
+  <field name="sowntown" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 消费地址 -->
+  <field name="address" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 产品主类别 -->
+  <field name="categoryP" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 产品子类别 -->
+  <field name="categoryC" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 商户用户id -->
+  <field name="brandUserId" type="string" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 活动类型 -->
+  <field name="caseType" type="int" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 活动状态 -->
+  <field name="status" type="int" indexed="true"  stored="true"  required="true" /> 
+
+  <!-- 发布渠道 -->
+  <field name="channelType" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 展示开始时间 -->
+  <field name="showStartTime" type="long" indexed="true"  stored="true"  required="true" /> 
+	
+  <!-- 展示结束时间 -->
+  <field name="showEndTime" type="long" indexed="true"  stored="true"  required="true" /> 
+	
+  <!-- 有效期开始时间 -->
+  <field name="startTime" type="long" indexed="true"  stored="true"  required="true" /> 
+	
+  <!-- 有效期结束时间-->
+  <field name="deadline" type="slong" indexed="true"  stored="true"  required="true" /> 
+	
+  <!-- 是否是打包销售（1:是打包销售;0:可自由购买本活动中产品） -->
+  <field name="isPackSale" type="int" indexed="true"  stored="true"  required="true" /> 
+
+  <!-- 活动定时发布的星期（0表示全周发布） -->
+  <field name="timerWeek" type="text_ws" indexed="true"  stored="false"  required="true" /> 	
+	
+  <!-- 活动定时每天发布的具体时间段（开始时间）单位毫秒 -->
+  <field name="timerBeginTime" type="long" indexed="true"  stored="true"  required="true" />	
+	
+  <!-- 活动定时每天发布的具体时间段（结束时间）单位毫秒 -->
+  <field name="timerEndTime" type="long" indexed="true"  stored="true"  required="true" />	
+  
+  
+  <!--搜索组合词-->
+  <field name="search"  type="text_ik" 	indexed="true" stored="false" multiValued="true"/>
+  
+   
+ </fields>
+
+ <!-- field to use to determine and enforce document uniqueness. -->
+ <uniqueKey>id</uniqueKey>
+
+ <!-- field for the QueryParser to use when an explicit fieldname is absent -->
+ <defaultSearchField>search</defaultSearchField>
+
+ <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+ <solrQueryParser defaultOperator="AND"/>
+ 
+
+  <copyField source="mpName" dest="search"/>
+  <copyField source="goodsName" dest="search"/>
+  <copyField source="brandName" dest="search"/>
+  <copyField source="address" dest="search"/>
+  
+  
+</schema>
+

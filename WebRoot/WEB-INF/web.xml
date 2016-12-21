@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+
+
+   <context-param>
+       <param-name>contextConfigLocation</param-name>
+	   <param-value>
+	   			classpath:applicationContext-community-beans.xml,
+	            classpath:applicationContext-community-cache.xml,
+	            classpath:applicationContext-xdsearch-init.xml,
+	            classpath:applicationContext-xdsearch-beans.xml,
+	            classpath:applicationContext-xdsearch-job.xml,
+	            classpath:applicationContext-xdsearch-datasource.xml
+	   </param-value>
+    </context-param>
+    
+
+
+  <!-- Uncomment if you are trying to use a Resin version before 3.0.19.
+    Their XML implementation isn't entirely compatible with Xerces.
+    Below are the implementations to use with Sun's JVM.
+  <system-property javax.xml.xpath.XPathFactory=
+             "com.sun.org.apache.xpath.internal.jaxp.XPathFactoryImpl"/>
+  <system-property javax.xml.parsers.DocumentBuilderFactory=
+             "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"/>
+  <system-property javax.xml.parsers.SAXParserFactory=
+             "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"/>
+   -->
+
+  <!-- People who want to hardcode their "Solr Home" directly into the
+       WAR File can set the JNDI property here...
+   -->
+
+	<!-- JNDI方式指定solr/home，或在tomcat下直接配置 
+    <env-entry>
+       <env-entry-name>solr/home</env-entry-name>
+       <env-entry-value>/home/web/tomcat/tomcat9090/webapps/XdSearch/WEB-INF/solr-conf/multicore</env-entry-value>
+       <env-entry-type>java.lang.String</env-entry-type>
+    </env-entry>
+-->
+
+   
+  <!-- Any path (name) registered in solrconfig.xml will be sent to that filter -->
+  <filter>
+    <filter-name>SolrRequestFilter</filter-name>
+    <filter-class>org.apache.solr.servlet.SolrDispatchFilter</filter-class>
+    <!-- If you are wiring Solr into a larger web application which controls
+         the web context root, you will probably want to mount Solr under
+         a path prefix (app.war with /app/solr mounted into it, for example).
+         You will need to put this prefix in front of the SolrDispatchFilter
+         url-pattern mapping too (/solr/*), and also on any paths for
+         legacy Solr servlet mappings you may be using.
+         For the admin JSP's to work properly in a path-prefixed configuration,
+         the admin folder containing the JSPs needs to be under the app context root
+         named to match the path-prefix.  For example:
+
+            .war
+               xxx
+                 admin
+                   stats.jsp
+    -->
+    <!--
+    <init-param>
+      <param-name>path-prefix</param-name>
+      <param-value>/xxx</param-value>
+    </init-param>
+    -->
+  </filter>
+
+  <filter-mapping>
+    <!--
+      NOTE: When using multicore, /admin JSP URLs with a core specified
+      such as /solr/coreName/admin/stats.jsp get forwarded by a
+      RequestDispatcher to /solr/admin/stats.jsp with the specified core
+      put into request scope keyed as "org.apache.solr.SolrCore".
+
+      It is unnecessary, and potentially problematic, to have the SolrDispatchFilter
+      configured to also filter on forwards.  Do not configure
+      this dispatcher as <dispatcher>FORWARD</dispatcher>.
+    -->
+    <filter-name>SolrRequestFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
+  
+    <filter>
+		<filter-name>Set Character Encoding</filter-name>
+		<filter-class>
+			com.starrymedia.xd.search.core.SetCharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>utf-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>Set Character Encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	
+	<filter>
+		<filter-name>rightFilter</filter-name>
+		<filter-class>
+			com.starrymedia.xd.search.core.RightFilter
+		</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>rightFilter</filter-name>
+		<url-pattern>*.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>rightFilter</filter-name>
+		<url-pattern>*.so</url-pattern>
+	</filter-mapping>
+
+	<listener>
+        <listener-class>com.starrymedia.xd.search.core.SysStartupListener</listener-class>
+    </listener>
+    
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+    </listener>
+    
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+    
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>config-vnd</param-name>
+            <param-value>WEB-INF/dispatcher-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/xdsearchservice/*</url-pattern>
+    </servlet-mapping>
+    
+    
+    <!-- 后台索引管理 -->
+    <servlet>
+	    <servlet-name>LoginServlet</servlet-name>
+	    <servlet-class>com.starrymedia.xd.search.admin.servlet.LoginServlet</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>LoginServlet</servlet-name>
+    	<url-pattern>/Login</url-pattern>
+  	</servlet-mapping>
+  
+  	<servlet>
+    	<servlet-name>LogoutServlet</servlet-name>
+    	<servlet-class>com.starrymedia.xd.search.admin.servlet.LogoutServlet</servlet-class>
+  	</servlet>
+  	<servlet-mapping>
+    	<servlet-name>LogoutServlet</servlet-name>
+    	<url-pattern>/Logout</url-pattern>
+  	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>SearchServlet</servlet-name>
+		<servlet-class>
+			com.starrymedia.xd.search.admin.servlet.SearchServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SearchServlet</servlet-name>
+		<url-pattern>/admin/SearchServlet.so</url-pattern>
+	</servlet-mapping>
+	
+    <servlet>
+		<servlet-name>DeleteIndexServlet</servlet-name>
+		<servlet-class>
+			com.starrymedia.xd.search.admin.servlet.DeleteIndexServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeleteIndexServlet</servlet-name>
+		<url-pattern>/admin/DeleteIndex.so</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>BatchDeleteIndexServlet</servlet-name>
+		<servlet-class>
+			com.starrymedia.xd.search.admin.servlet.BatchDeleteIndexServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>BatchDeleteIndexServlet</servlet-name>
+		<url-pattern>/admin/BatchDeleteIndex.so</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>InitEditIndexServlet</servlet-name>
+		<servlet-class>
+			com.starrymedia.xd.search.admin.servlet.InitEditIndexServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>InitEditIndexServlet</servlet-name>
+		<url-pattern>/admin/InitEditIndex.so</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EditIndexServlet</servlet-name>
+		<servlet-class>
+			com.starrymedia.xd.search.admin.servlet.EditIndexServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>EditIndexServlet</servlet-name>
+		<url-pattern>/admin/EditIndex.so</url-pattern>
+	</servlet-mapping>
+	
+	<!-- 开发测试 使用-->
+	<servlet>
+		<servlet-name>TestSearchServlet</servlet-name>
+		<servlet-class>
+			com.starrymedia.xd.search.admin.servlet.TestSearchServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TestSearchServlet</servlet-name>
+		<url-pattern>/admin/TestSearchServlet.so</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>TestSuggestServlet</servlet-name>
+		<servlet-class>
+			com.starrymedia.xd.search.admin.servlet.TestSuggestServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>TestSuggestServlet</servlet-name>
+		<url-pattern>/admin/TestSuggestServlet.so</url-pattern>
+	</servlet-mapping>	
+	
+
+
+  <!-- Otherwise it will continue to the old servlets -->
+  <servlet>
+    <servlet-name>SolrServer</servlet-name>
+    <servlet-class>org.apache.solr.servlet.SolrServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>SolrUpdate</servlet-name>
+    <servlet-class>org.apache.solr.servlet.SolrUpdateServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>Logging</servlet-name>
+    <servlet-class>org.apache.solr.servlet.LogLevelSelection</servlet-class>
+  </servlet>
+
+  <!-- @Deprecated -->
+  <servlet>
+    <servlet-name>ping</servlet-name>
+    <jsp-file>/admin/ping.jsp</jsp-file>
+  </servlet>
+  
+  
+  <servlet-mapping>
+    <servlet-name>SolrServer</servlet-name>
+    <url-pattern>/select/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>SolrUpdate</servlet-name>
+    <url-pattern>/update/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>Logging</servlet-name>
+    <url-pattern>/admin/logging</url-pattern>
+  </servlet-mapping>
+
+  <!-- @Deprecated -->
+  <servlet-mapping>
+    <servlet-name>ping</servlet-name>
+    <url-pattern>/admin/ping</url-pattern>
+  </servlet-mapping>
+
+  <!-- @Deprecated -->
+  <servlet-mapping>
+    <servlet-name>Logging</servlet-name>
+    <url-pattern>/admin/logging.jsp</url-pattern>
+  </servlet-mapping>
+  
+  <mime-mapping>
+    <extension>.xsl</extension>
+    <!-- per http://www.w3.org/TR/2006/PR-xslt20-20061121/ -->
+    <mime-type>application/xslt+xml</mime-type>
+  </mime-mapping>
+  
+
+    
+    
+    
+    
+    
+    
+
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>login.jsp</welcome-file>
+  </welcome-file-list>
+
+</web-app>

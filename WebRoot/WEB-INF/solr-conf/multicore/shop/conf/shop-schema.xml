@@ -1,0 +1,161 @@
+<?xml version="1.0" ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one or more
+ contributor license agreements.  See the NOTICE file distributed with
+ this work for additional information regarding copyright ownership.
+ The ASF licenses this file to You under the Apache License, Version 2.0
+ (the "License"); you may not use this file except in compliance with
+ the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<schema name="starry-community-shop" version="1.1">
+  <types>
+  			<fieldType name="int" class="solr.TrieIntField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+  			<fieldType name="long" class="solr.TrieLongField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+  			<fieldType name="double" class="solr.TrieDoubleField" precisionStep="8" omitNorms="true" positionIncrementGap="0"/>
+			<fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
+			<fieldType name="slong" class="solr.SortableLongField" sortMissingLast="true" omitNorms="true"/>
+   			<fieldtype name="string"  class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+   			<fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
+   
+   			<fieldType name="text_ik" class="solr.TextField" >    
+                   <analyzer class="org.wltea.analyzer.lucene.IKAnalyzer"/>    
+                   <analyzer type="index">    
+                       <tokenizer class="org.wltea.analyzer.solr.IKTokenizerFactory" isMaxWordLength="false"/>    
+                       <filter class="solr.StopFilterFactory"    
+                               ignoreCase="true" words="ext_stopword.dic"/>    
+                       <filter class="solr.WordDelimiterFilterFactory"    
+                               generateWordParts="1"    
+                               generateNumberParts="1"    
+                               catenateWords="1"    
+                               catenateNumbers="1"    
+                               catenateAll="0"    
+                               splitOnCaseChange="1"/>    
+                       <filter class="solr.LowerCaseFilterFactory"/>    
+                       <filter class="solr.EnglishPorterFilterFactory"    
+                           protected="ext_stopword.dic"/>    
+                       <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>    
+                   </analyzer>    
+                     <analyzer type="query">    
+                       <tokenizer class="org.wltea.analyzer.solr.IKTokenizerFactory" isMaxWordLength="false"/>    
+                       <filter class="solr.StopFilterFactory"    
+                               ignoreCase="true" words="ext_stopword.dic"/>    
+                       <filter class="solr.WordDelimiterFilterFactory"    
+                               generateWordParts="1"    
+                               generateNumberParts="1"    
+                               catenateWords="1"    
+                               catenateNumbers="1"    
+                               catenateAll="0"    
+                               splitOnCaseChange="1"/>    
+                       <filter class="solr.LowerCaseFilterFactory"/>    
+                       <filter class="solr.EnglishPorterFilterFactory"    
+                           protected="ext_stopword.dic"/>    
+                       <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>    
+                   </analyzer>    
+        	</fieldType>
+        	
+        	<fieldtype name="text_ws" class="solr.TextField" positionIncrementGap="100">
+				  <analyzer>
+				  		<tokenizer class="solr.WhitespaceTokenizerFactory" /> 
+				  </analyzer>
+			</fieldtype>
+			
+  </types>
+
+
+
+ <fields>   
+ 
+ 	<!-- 为了在排错时方便在后台查看属性值，故一些字段没有严格按是否索引、存储来定义  -->
+
+  <!-- 唯一ID -->
+  <field name="id"      type="long"   indexed="true"  stored="true"  multiValued="false" required="true"/>
+  
+  <!-- 商户用户id -->
+  <field name="brandUserId" type="string" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 商户id -->
+  <field name="brandId" type="string" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 商家名称 -->
+  <field name="brandName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 门店名称 -->
+  <field name="shopName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 地址 -->
+  <field name="address" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 活动名称 -->
+  <field name="mpName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 产品名称 -->
+  <field name="goodsName" type="text_ik" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 国家 -->
+  <field name="country" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 省-->
+  <field name="province" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 市 -->
+  <field name="city" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 区-->
+  <field name="sowntown" type="text_ws" indexed="true"  stored="false"  required="true" /> 
+  
+  <!-- 产品主类别 -->
+  <field name="categoryP" type="text_ws" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 产品子类别 -->
+  <field name="categoryC" type="text_ws" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 本周上门验证次数 -->
+  <field name="useCount" type="int" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 经度 -->
+  <field name="longitude" type="string" indexed="true"  stored="true"  required="true" /> 
+  
+  <!-- 纬度 -->
+  <field name="latitude" type="string" indexed="true"  stored="true"  required="true"/> 
+  
+  <!-- 经纬度 -->
+  <field name="location" type="location" indexed="true"  stored="true"  required="true" /> 
+  
+  
+  <!--搜索组合词-->
+  <field name="search"  type="text_ik" 	indexed="true" stored="false" multiValued="true"/>
+  
+  
+  <dynamicField name="*_coordinate"  type="double" indexed="true"  stored="false"/>
+  
+   
+ </fields>
+
+ <!-- field to use to determine and enforce document uniqueness. -->
+ <uniqueKey>id</uniqueKey>
+
+ <!-- field for the QueryParser to use when an explicit fieldname is absent -->
+ <defaultSearchField>search</defaultSearchField>
+
+ <!-- SolrQueryParser configuration: defaultOperator="AND|OR" -->
+ <solrQueryParser defaultOperator="AND"/>
+ 
+ 
+  <copyField source="mpName" dest="search"/>
+  <copyField source="goodsName" dest="search"/>
+  <copyField source="brandName" dest="search"/>
+  <copyField source="shopName" dest="search"/>
+  <copyField source="address" dest="search"/>
+  
+  
+</schema>
+

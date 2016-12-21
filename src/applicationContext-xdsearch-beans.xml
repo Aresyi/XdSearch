@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd"
+       default-autowire="byName">
+
+	<!-- DAO相关 -->
+	<import resource="applicationContext-xdsearch-beans-dao.xml" />
+	
+	<!-- Services相关 -->
+	<import resource="applicationContext-xdsearch-beans-services.xml" />
+	
+	<!-- Component相关 -->
+	<import resource="applicationContext-xdsearch-beans-component.xml" />
+	
+	<!-- Intercept相关 -->
+	<import resource="applicationContext-xdsearch-beans-intercept.xml" />
+
+	<!-- 事务管理 -->
+    <tx:advice id="txAdviceX" transaction-manager="commTransactionManager">
+        <tx:attributes>
+            <tx:method name="create*" read-only="false"
+                       rollback-for="com.starrymedia.community.core.exception.CommunityException"/>
+            <tx:method name="save*" read-only="false"
+                       rollback-for="com.starrymedia.community.core.exception.CommunityException"/>
+            <tx:method name="remove*" read-only="false"
+                       rollback-for="com.starrymedia.community.core.exception.CommunityException"/>
+            <tx:method name="update*" read-only="false"
+                       rollback-for="com.starrymedia.community.core.exception.CommunityException"/>
+            <tx:method name="del*" read-only="false"
+                       rollback-for="com.starrymedia.community.core.exception.CommunityException"/>
+            <tx:method name="handle*" read-only="false"
+                       rollback-for="com.starrymedia.community.core.exception.CommunityException"/>
+            <tx:method name="*Special" read-only="false"
+                       rollback-for="com.starrymedia.community.core.exception.CommunityException"/>
+            <tx:method name="*" read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+    <aop:config>
+        <aop:pointcut id="serviceOperationX" expression="execution(* com.starrymedia.xd.search.service.impl.*.*(..))"/>
+        <aop:advisor advice-ref="txAdviceX" pointcut-ref="serviceOperationX"/>
+    </aop:config>
+    
+    
+
+</beans>
